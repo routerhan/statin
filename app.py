@@ -27,7 +27,7 @@ def evaluate():
         # 檢查是否缺少必要的欄位
         required_keys = ['ck_value', 'transaminase', 'bilirubin', 'muscle_symptoms']
         if not all(key in data and data[key] is not None for key in required_keys):
-            return jsonify({'success': False, 'error': "Missing required fields。"}), 400
+            return jsonify({'success': False, 'error': "Missing required fields."}), 400
 
         # 驗證並轉換數值
         ck_value = float(data['ck_value'])
@@ -37,13 +37,13 @@ def evaluate():
 
         # 檢查數值是否為負數
         if ck_value < 0 or transaminase < 0 or bilirubin < 0:
-            return jsonify({'success': False, 'error': "Value cannot be negative。"}), 400
+            return jsonify({'success': False, 'error': "Clinical values cannot be negative."}), 400
 
         recommendation = get_statin_recommendation(ck_value, transaminase, bilirubin, muscle_symptoms)
 
         return jsonify({'success': True, 'recommendation': recommendation})
     except (ValueError, TypeError):
-        return jsonify({'success': False, 'error': "Input invalid format."}), 400
+        return jsonify({'success': False, 'error': "Invalid input format. Please ensure all values are numbers."}), 400
     except Exception as e:
         app.logger.error(f"An unexpected error occurred: {e}")
         return jsonify({'success': False, 'error': "An unexpected error occurred."}), 500

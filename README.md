@@ -45,7 +45,7 @@ This method is suitable for development and debugging.
     python app.py
     ```
 5.  **Visit application**
-    Open in your browser: `http://127.0.0.1:8080`。
+    Open in your browser: `http://127.0.0.1:8080`.
 
 ### 2. Containerization (using Docker)
 
@@ -61,7 +61,7 @@ This method is suitable for simulating a production environment or for rapid dep
     docker run -p 8080:8080 statin-safety-tool
     ```
 4.  **Visit application**
-    Open in your browser: `http://localhost:8080`。
+    Open in your browser: `http://localhost:8080`.
 
 ## Project Structure
 

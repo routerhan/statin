@@ -77,6 +77,53 @@ This method is suitable for simulating a production environment or for rapid dep
 └── README.md               # Documentation
 ```
 
+## Cloud Deployment Steps
+Using GCP service to deploy Statin Safety Tool:
+
+1.  **Ensure `gcloud` cli installed and login and run `gcloud init`**
+2.  **Enable the required APIs*
+    ```bash
+    gcloud services enable run.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com
+    ```
+3.  **Create Artifact Registry (Skipped if have done)**
+    ```bash
+    gcloud artifacts repositories create statin-repo \
+    --repository-format=docker \
+    --location=asia-east1 \
+    --description="Repository for Statin Safety Tool images"
+    ```
+
+4.  **Build and Push image to Artifact Registry**
+    ```bash
+    gcloud builds submit --tag asia-east1-docker.pkg.dev/statin-project/statin-repo/statin-safety-tool:v1.0.0
+    ```
+
+5. **Deploy to Cloud Run**
+    ```bash
+    gcloud run deploy statin-safety-tool \
+    --image asia-east1-docker.pkg.dev/statin-project/statin-repo/statin-safety-tool:v1.0.0 \
+    --platform managed \
+    --region asia-east1 \
+    --allow-unauthenticated
+    ```
+
+6.  **Visit application**
+    ```
+    ✗ gcloud run deploy statin-safety-tool \
+    --image asia-east1-docker.pkg.dev/statin-project/statin-repo/statin-safety-tool:v1.0.0 \
+    --platform managed \
+    --region asia-east1 \
+    --allow-unauthenticated
+    Deploying container to Cloud Run service [statin-safety-tool] in project [statin-project] region [asia-east1]
+    ✓ Deploying new service... Done.
+    ✓ Creating Revision...
+    ✓ Routing traffic...
+    ✓ Setting IAM Policy...
+    Done.
+    Service [statin-safety-tool] revision [statin-safety-tool-00001-n9b] has been deployed and is serving 100 percent of traffic.
+    Service URL: https://statin-safety-tool-531348950833.asia-east1.run.app
+    ```
+
 ## ©️ Copyright and Version
 
 -   **Own by**: National Cheng Kung University Department of Engineering Science

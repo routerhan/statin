@@ -11,7 +11,7 @@ COPYRIGHT_HOLDER = "National Cheng Kung University Department of Engineering Sci
 @app.route('/')
 def index():
     """Renders the main HTML page for the Statin tool."""
-    return render_template('index.html', version=APP_VERSION, copyright=COPYRIGHT_HOLDER)
+    return render_template('index.html', version=APP_VERSION)
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate():

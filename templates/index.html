@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statin Safety Management Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .form-group label {
+            flex: 1;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group .input-field { /* New class for styling */
+            flex: 1; /* Change flex to 1 to make it half of the label's width */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-left: auto; /* Push the input to the right */
+        }
+        .form-group .input-field {
+            max-width: 50%; /* Ensure it doesn't grow too large */
+        }
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2); /* Make checkbox slightly larger */
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .buttons button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+        #result-box {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 5px;
+            min-height: 150px;
+            white-space: pre-wrap; /* Preserve newlines and wrap text */
+            font-family: 'Times New Roman', serif;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .footer-logo {
+            height: 96px;
+            width: auto;
+            margin-right: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Statin Safety Management Tool</h1>
+
+        <div class="form-group">
+            <label for="ck_value">CK 值 (CK Value) (U/L):</label>
+            <input type="number" id="ck_value" class="input-field" placeholder="e.g. 200" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="transaminase">轉胺酶 (Transaminase, ALT/AST) (U/L):</label>
+            <input type="number" id="transaminase" class="input-field" placeholder="e.g. 40" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="bilirubin">總膽紅素 (Total Bilirubin) (mg/dL):</label>
+            <input type="number" step="0.1" id="bilirubin" class="input-field" placeholder="e.g. 2.0" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <input type="checkbox" id="muscle_symptoms">
+            <label for="muscle_symptoms">有肌肉症狀 (Muscle symptoms present)</label>
+        </div>
+
+        <div class="buttons">
+            <button onclick="evaluateStatin()">評估</button>
+            <button onclick="resetFields()">重置</button>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+
+        <h2>診斷建議:</h2>
+        <div id="result-box">
+            <!-- 診斷建議將顯示在這裡 -->
+        </div>
+
+        <div class="footer">
+            <img src="{{ url_for('static', filename='icon.png') }}" alt="Logo" class="footer-logo">
+            <span>{{ copyright }} - 版本: {{ version }}</span>
+        </div>
+    </div>
+
+    <script>
+        async function evaluateStatin() {
+            const ck_value = document.getElementById('ck_value').value;
+            const transaminase = document.getElementById('transaminase').value;
+            const bilirubin = document.getElementById('bilirubin').value;
+            const muscle_symptoms = document.getElementById('muscle_symptoms').checked;
+            const resultBox = document.getElementById('result-box');
+            const errorMessage = document.getElementById('error-message');
+
+            errorMessage.textContent = ''; // Clear previous errors
+
+            // Basic client-side validation
+            if (ck_value === '' || transaminase === '' || bilirubin === '') {
+                errorMessage.textContent = '請輸入所有數值。';
+                return;
+            }
+
+            const ck_float = parseFloat(ck_value);
+            const transaminase_float = parseFloat(transaminase);
+            const bilirubin_float = parseFloat(bilirubin);
+
+            if (ck_float < 0 || transaminase_float < 0 || bilirubin_float < 0) {
+                errorMessage.textContent = '輸入數值不可為負數。';
+                return;
+            }
+
+            try {
+                const response = await fetch('/evaluate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ck_value: ck_float,
+                        transaminase: transaminase_float,
+                        bilirubin: bilirubin_float,
+                        muscle_symptoms: muscle_symptoms
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultBox.textContent = data.recommendation;
+                } else {
+                    errorMessage.textContent = `錯誤: ${data.error || '未知錯誤'}`;
+                    resultBox.textContent = '';
+                }
+            } catch (error) {
+                console.error('Error during fetch:', error);
+                errorMessage.textContent = '無法連接到伺服器。請稍後再試。';
+                resultBox.textContent = '';
+            }
+        }
+
+        function resetFields() {
+            document.getElementById('ck_value').value = '';
+            document.getElementById('transaminase').value = '';
+            document.getElementById('bilirubin').value = '';
+            document.getElementById('muscle_symptoms').checked = false;
+            document.getElementById('result-box').textContent = '';
+            document.getElementById('error-message').textContent = '';
+        }
+    </script>
+</body>
+</html>

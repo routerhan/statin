@@ -79,5 +79,5 @@ This method is suitable for simulating a production environment or for rapid dep
 
 ## ©️ Copyright and Version
 
--   **Own by**: 成大XXX實驗室
+-   **Own by**: National Cheng Kung University Department of Engineering Science
 -   **Version**: v1.0.0

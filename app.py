@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # Define app constants for easy updates
 APP_VERSION = "v1.0.0"
-COPYRIGHT_HOLDER = "成大XXX實驗室"
+COPYRIGHT_HOLDER = "National Cheng Kung University Department of Engineering Science"
 
 @app.route('/')
 def index():
@@ -22,12 +22,12 @@ def evaluate():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({'success': False, 'error': "未提供輸入資料。"}), 400
+            return jsonify({'success': False, 'error': "No input data."}), 400
 
         # 檢查是否缺少必要的欄位
         required_keys = ['ck_value', 'transaminase', 'bilirubin', 'muscle_symptoms']
         if not all(key in data and data[key] is not None for key in required_keys):
-            return jsonify({'success': False, 'error': "缺少必要的輸入欄位。"}), 400
+            return jsonify({'success': False, 'error': "Missing required fields。"}), 400
 
         # 驗證並轉換數值
         ck_value = float(data['ck_value'])
@@ -37,16 +37,16 @@ def evaluate():
 
         # 檢查數值是否為負數
         if ck_value < 0 or transaminase < 0 or bilirubin < 0:
-            return jsonify({'success': False, 'error': "臨床數值不可為負數。"}), 400
+            return jsonify({'success': False, 'error': "Value cannot be negative。"}), 400
 
         recommendation = get_statin_recommendation(ck_value, transaminase, bilirubin, muscle_symptoms)
 
         return jsonify({'success': True, 'recommendation': recommendation})
     except (ValueError, TypeError):
-        return jsonify({'success': False, 'error': "輸入無效，請確保所有值均為數字。"}), 400
+        return jsonify({'success': False, 'error': "Input invalid format."}), 400
     except Exception as e:
         app.logger.error(f"An unexpected error occurred: {e}")
-        return jsonify({'success': False, 'error': "發生未預期的伺服器錯誤。"}), 500
+        return jsonify({'success': False, 'error': "An unexpected error occurred."}), 500
 
 if __name__ == '__main__':
     # For development, run with debug=True.

@@ -19,10 +19,21 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .header-icon {
+            height: 96px;
+            width: auto;
+            margin-right: 20px;
+        }
         h1 {
             color: #0056b3;
-            text-align: center;
-            margin-bottom: 30px;
+            /* text-align and margin-bottom are now handled by .header */
+            margin: 0;
         }
         .form-group {
             margin-bottom: 15px;
@@ -97,15 +108,18 @@
             color: #6c757d;
         }
         .footer-logo {
-            height: 96px;
+            height: 64px; /* Adjusted for the new logo */
             width: auto;
-            margin-right: 40px;
+            margin-left: 20px; /* Space between text and logo */
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Statin Safety Management Tool</h1>
+        <div class="header">
+            <img src="{{ url_for('static', filename='icon.png') }}" alt="Logo" class="header-icon">
+            <h1>Statin Safety Management Tool</h1>
+        </div>
 
         <div class="form-group">
             <label for="ck_value">CK Value (U/L):</label>
@@ -140,8 +154,8 @@
         </div>
 
         <div class="footer">
-            <img src="{{ url_for('static', filename='icon.png') }}" alt="Logo" class="footer-logo">
-            <span>{{ copyright }} - 版本: {{ version }}</span>
+            <span>{{ copyright }} - Version: {{ version }}</span>
+            <img src="{{ url_for('static', filename='LAiMM.png') }}" alt="LAiMM Logo" class="footer-logo">
         </div>
     </div>
 

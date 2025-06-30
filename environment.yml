@@ -6,4 +6,11 @@ dependencies:
   - python=3.12
   - pip
   - pip:
-    - Flask==2.3.3
+    - Flask==3.0.0
+    - Flask-Login==0.6.3
+    - Flask-SQLAlchemy==3.1.1
+    - Flask-Migrate==4.1.0
+    - psycopg2-binary==2.9.9
+    - google-cloud-secret-manager==2.18.1
+    - SQLAlchemy==2.0.25
+    - python-dotenv==1.0.1

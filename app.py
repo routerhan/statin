@@ -30,13 +30,22 @@ if project_id:
     db_user = get_secret("DB_USER", project_id)
     db_pass = get_secret("DB_PASS", project_id)
     db_name = get_secret("DB_NAME", project_id)
-    instance_connection_name = os.environ.get('INSTANCE_CONNECTION_NAME') # e.g. project:region:instance
     app.config['SECRET_KEY'] = get_secret("FLASK_SECRET_KEY", project_id)
     
-    # Cloud SQL (PostgreSQL) connection string
-    db_uri = f"postgresql+psycopg2://{db_user}:{db_pass}@/{db_name}?host=/cloudsql/{instance_connection_name}"
+    # Check if running in the Cloud Run environment
+    if os.environ.get('K_SERVICE'):
+        # Cloud Run: Use the Unix socket provided by the sidecar proxy
+        instance_connection_name = os.environ.get('INSTANCE_CONNECTION_NAME')
+        db_uri = f"postgresql+psycopg2://{db_user}:{db_pass}@/{db_name}?host=/cloudsql/{instance_connection_name}"
+    else:
+        # Local development with the proxy: Use TCP
+        # The proxy listens on 127.0.0.1:5432 by default
+        db_host = "127.0.0.1"
+        db_port = 5432
+        db_uri = f"postgresql+psycopg2://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
 else:
     # Local development fallback (using SQLite for simplicity)
+    # This is used when GCP_PROJECT environment variable is not set.
     app.config['SECRET_KEY'] = 'dev-secret-key'
     db_uri = "sqlite:///statin_tool.db"
 

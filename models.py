@@ -8,7 +8,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(512), nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -19,9 +19,12 @@ class User(UserMixin, db.Model):
 class Evaluation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # This backref creates a 'evaluations' attribute on the User model,
+    # so you can do user.evaluations to get a list of their evaluations.
+    user = db.relationship('User', backref=db.backref('evaluations', lazy=True))
     ck_value = db.Column(db.Float, nullable=False)
     transaminase = db.Column(db.Float, nullable=False)
     bilirubin = db.Column(db.Float, nullable=False)
     muscle_symptoms = db.Column(db.Boolean, nullable=False)
     recommendation = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    timestamp = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())

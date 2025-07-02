@@ -14,3 +14,4 @@ dependencies:
     - google-cloud-secret-manager==2.18.1
     - SQLAlchemy==2.0.25
     - python-dotenv==1.0.1
+    - gunicorn==22.0.0

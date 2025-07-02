@@ -176,9 +176,9 @@ gcloud run deploy statin-safety-tool \
 ### Step 4.3: Grant IAM Permissions (Crucial!)
 The Cloud Run service needs permission to access Secret Manager and Cloud SQL.
 ```bash
-# Find your Cloud Run service account email
+# Find your Cloud Run service account email with this command
 # It looks like: service-PROJECT_NUMBER@gcp-sa-run.iam.gserviceaccount.com
-SERVICE_ACCOUNT=$(gcloud run services describe statin-safety-tool --platform managed --region asia-east1 --format 'value(status.latestCreatedRevision.serviceAccountName)')
+gcloud run services describe statin-safety-tool --platform managed --region asia-east1
 
 # Grant Secret Manager access
 gcloud projects add-iam-policy-binding statin-project \

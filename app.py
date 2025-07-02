@@ -154,6 +154,3 @@ def create_user(username, full_name, password):
     db.session.add(new_user)
     db.session.commit()
     print(f"User '{username}' created successfully.")
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
